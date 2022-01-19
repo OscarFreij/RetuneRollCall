@@ -29,10 +29,9 @@ class db
 
     public function constructQuerry($querry)
     {
-        $this->$pdo = $pdo;
         try 
         {
-            $pdo->exec($querry);
+            $this->pdo->exec($querry);
         }
         catch(PDOException $e)
         {
@@ -44,10 +43,9 @@ class db
     
     public function constructResultQuerry($querry)
     {
-        $this->$pdo = $pdo;
         try 
         {
-            $stmt = $pdo->prepare($querry);
+            $stmt = $this->pdo->prepare($querry);
             $stmt->execute();
 
             // set the resulting array to associative
