@@ -9,9 +9,6 @@ require_once "classes/db.class.php";
 require_once "classes/functions.class.php";    
 require_once "classes/credentials.class.php";
 
-require_once '../private_html/vendor/autoload.php';
-require_once '../private_html/config.php';
-
 class container
 {
     private $db;
