@@ -58,6 +58,11 @@ class db
         }  
         return $result;
     }
+
+    public function quote($string)
+    {
+        return $this->pdo->quote($string);
+    }
     
 }
 ?>
