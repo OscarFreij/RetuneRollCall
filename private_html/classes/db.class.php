@@ -18,7 +18,7 @@ class db
             $password = $credentials['password'];
 
             $this->pdo = new PDO("mysql:host=$servername;dbname=$dbname",$username,$password);
-            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION, PDO::FETCH_ASSOC);
+            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             error_log("PDO Connection Astablished", 0);
         }
         catch(PDOException $e)
@@ -47,6 +47,7 @@ class db
         {
             $stmt = $this->pdo->prepare($querry);
             $stmt->execute();
+            $stmt->setFetchMode(PDO::FETCH_ASSOC);
             $result = $stmt->fetchAll();
         }
         catch(PDOException $e)
