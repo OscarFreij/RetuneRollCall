@@ -84,7 +84,7 @@ class functions
     private function getUserData(string $username)
     {
         $quotedUsername = $this->container->db()->quote($username);
-        return $result = $this->container->db()->constructResultQuerry("SELECT `id`, `teamAccess`, `superAdmin` FROM `users` WHERE username = $quotedUsername AND enabled = 1;");
+        return $this->container->db()->constructResultQuerry("SELECT `id`, `teamAccess`, `superAdmin`, `enabled` FROM `users` WHERE username = $quotedUsername;");
     }
 
     public function login(string $username, string $password)
