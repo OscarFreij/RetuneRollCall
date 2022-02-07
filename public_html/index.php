@@ -44,7 +44,28 @@ else
 
 if (http_response_code() != 200)
 {
-    require "../private_html/pages/errors/".strval(http_response_code()).".php";
+    switch (http_response_code()) {
+        case 400:
+            require "../private_html/pages/errors/400.php";
+            break;
+
+        case 401:
+            require "../private_html/pages/errors/401.php";
+            break;
+
+        case 404:
+            require "../private_html/pages/errors/404.php";
+            break;
+
+        case 500:
+            require "../private_html/pages/errors/500.php";
+            break;
+        
+        default:
+            error_log("index recived http response code: ".http_response_code());
+            break;
+    }
+    
 }
 
 ?>
