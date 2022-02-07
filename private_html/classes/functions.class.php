@@ -8,13 +8,14 @@ class functions
     {
         $this->container = $container;    
     }
-
-    private function checkLogin($username, $password)
+    
+    #region User Functions
+    private function checkLogin(string $username, string $password)
     {
         $quotedUsername = $this->container->db()->quote($username);
-        $result = $this->container->db()->constructResultQuerry("SELECT `password`, `enabled` FROM `users` WHERE `users.username` = $quotedUsername AND `users.enabled` = 1;");
+        $result = $this->container->db()->constructResultQuerry("SELECT `password`, `enabled` FROM `users` WHERE `username` = $quotedUsername AND `enabled` = 1;");
 
-        if ($result !== false && count($result) == 0)
+        if ($result !== false && count($result) != 0)
         {
             $hash = $result[0]['password'];
             if ($result[0]['enabled'] == 1)
@@ -22,16 +23,52 @@ class functions
                 return password_verify($password, $hash);
             }
         }
+        else
+        {
+            error_log("Unknown user tried to login: ".$quotedUsername);
+        }
         return false;
     }
 
-    private function getUserData($username)
+    public function changePassword(string $username, string $passwordOld, string $passwordNew)
     {
-        $quotedUsername = $this->container->db()->quote($username);
-        return $result = $this->container->db()->constructResultQuerry("SELECT `id`, `teamAccess`, `superAdmin` FROM `users` WHERE `users.username` = $quotedUsername AND `users.enabled` = 1;");
+        if ($this->checkLogin($username, $passwordOld))
+        {
+            $quotedUsername = $this->container->db()->quote($username);
+            $quotedPasswordNewHASH = $this->container->db()->quote(password_hash($passwordNew, PASSWORD_DEFAULT));
+            $success = $this->container->db()->constructQuerry("UPDATE `users` SET `password`=$quotedPasswordNewHASH WHERE `username` = $quotedUsername AND `enabled` = 1;");
+        }
+        else
+        {
+            $success = false;
+        }
+        
+        return $success;
     }
 
-    public function login($username, $password)
+    public function createAccount(string $username, string $password)
+    {
+        if (count($this->getUserData($username)) == 0)
+        {
+            $quotedUsername = $this->container->db()->quote($username);
+            $quotedPasswordHASH = $this->container->db()->quote(password_hash($password, PASSWORD_DEFAULT));
+            $success = $this->container->db()->constructQuerry("INSERT INTO `users` (`username`, `password`) VALUES ($quotedUsername, $quotedPasswordHASH)");
+        }
+        else
+        {
+            $success = false;
+        }
+        
+        return $success;
+    }
+
+    private function getUserData(string $username)
+    {
+        $quotedUsername = $this->container->db()->quote($username);
+        return $result = $this->container->db()->constructResultQuerry("SELECT `id`, `teamAccess`, `superAdmin` FROM `users` WHERE username = $quotedUsername AND enabled = 1;");
+    }
+
+    public function login(string $username, string $password)
     {
         if ($this->checkLogin($username, $password))
         {
@@ -42,6 +79,11 @@ class functions
             $_SESSION['username'] = $username;
             $_SESSION['teamAccess'] = $result[0]['teamAccess'];
             $_SESSION['superAdmin'] = $result[0]['superAdmin'];
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
 
@@ -54,5 +96,6 @@ class functions
         $uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
         header("Location: http://$host$uri/");
     }
+    #endregion
 }
 ?>
