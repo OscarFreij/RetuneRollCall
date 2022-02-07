@@ -22,6 +22,10 @@ class functions
             {
                 return password_verify($password, $hash);
             }
+            else
+            {
+                error_log("User ".$quotedUsername." tried to login but is disabled");
+            }
         }
         else
         {
