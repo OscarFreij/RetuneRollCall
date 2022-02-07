@@ -52,7 +52,7 @@ class functions
 
     public function createAccount(string $username, string $password)
     {
-        if (count($this->getUserData($username)) == 0)
+        if ($this->checkUserExists($username))
         {
             $quotedUsername = $this->container->db()->quote($username);
             $quotedPasswordHASH = $this->container->db()->quote(password_hash($password, PASSWORD_DEFAULT));
@@ -68,7 +68,7 @@ class functions
 
     public function deleteAccount(string $username)
     {
-        if (count($this->getUserData($username)) == 0)
+        if ($this->checkUserExists($username))
         {
             $quotedUsername = $this->container->db()->quote($username);
             $success = $this->container->db()->constructQuerry("DELETE FROM `users` WHERE `username` = $quotedUsername");
@@ -85,6 +85,19 @@ class functions
     {
         $quotedUsername = $this->container->db()->quote($username);
         return $this->container->db()->constructResultQuerry("SELECT `id`, `teamAccess`, `superAdmin`, `enabled` FROM `users` WHERE username = $quotedUsername;");
+    }
+
+    private function checkUserExists(string $username)
+    {
+        $quotedUsername = $this->container->db()->quote($username);
+        if (count($this->container->db()->constructResultQuerry("SELECT `id`, `enabled` FROM `users` WHERE username = $quotedUsername;")) != 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public function login(string $username, string $password)
