@@ -62,6 +62,21 @@ class functions
         return $success;
     }
 
+    public function deleteAccount(string $username)
+    {
+        if (count($this->getUserData($username)) == 0)
+        {
+            $quotedUsername = $this->container->db()->quote($username);
+            $success = $this->container->db()->constructQuerry("DELETE FROM `users` WHERE `username` = $quotedUsername");
+        }
+        else
+        {
+            $success = false;
+        }
+        
+        return $success;
+    }
+
     private function getUserData(string $username)
     {
         $quotedUsername = $this->container->db()->quote($username);
