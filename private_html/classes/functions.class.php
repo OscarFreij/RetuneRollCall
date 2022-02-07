@@ -13,13 +13,13 @@ class functions
     private function checkLogin(string $username, string $password)
     {
         $quotedUsername = $this->container->db()->quote($username);
-        $result = $this->container->db()->constructResultQuerry("SELECT `password`, `enabled` FROM `users` WHERE `username` = $quotedUsername AND `enabled` = 1;");
+        $result = $this->container->db()->constructResultQuerry("SELECT `password`, `enabled` FROM `users` WHERE `username` = $quotedUsername");
 
-        if ($result !== false && count($result) != 0)
+        if ($this->checkUserExists($username))
         {
-            $hash = $result[0]['password'];
             if ($result[0]['enabled'] == 1)
             {
+                $hash = $result[0]['password'];
                 return password_verify($password, $hash);
             }
             else
