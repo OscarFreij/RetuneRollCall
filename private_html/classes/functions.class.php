@@ -100,6 +100,22 @@ class functions
         }
     }
 
+    public function toggleUserEnabled(string $username)
+    {
+        $quotedUsername = $this->container->db()->quote($username);
+        $result = $this->getUserData($username);
+
+        if ($result[0]['enabled'] == 0)
+        {
+            $success = $this->container->db()->constructQuerry("UPDATE `users` SET `enabled` = 1 WHERE `username` = $quotedUsername;");
+        }
+        else
+        {
+            $success = $this->container->db()->constructQuerry("UPDATE `users` SET `enabled` = 0 WHERE `username` = $quotedUsername;");
+        }
+        return $success;
+    }
+
     public function login(string $username, string $password)
     {
         if ($this->checkLogin($username, $password))
